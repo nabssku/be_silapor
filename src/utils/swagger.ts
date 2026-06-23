@@ -78,19 +78,19 @@ export const swaggerSpec = {
       post: {
         tags: ['Authentication'],
         summary: 'Register User Baru',
-        description: 'Mendaftarkan user baru (mahasiswa, dosen, admin, teknisi) dengan NIM/NIDN unik',
+        description: 'Mendaftarkan user baru (mahasiswa, dosen, admin, teknisi) dengan NIM/NIDN unik. Kolom kata sandi diwakili oleh kolom pic.',
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['name', 'nimNidn', 'email', 'password', 'role'],
+                required: ['name', 'nimNidn', 'email', 'pic', 'role'],
                 properties: {
                   name: { type: 'string', example: 'Budi Santoso' },
                   nimNidn: { type: 'string', example: '2201010023' },
                   email: { type: 'string', example: 'budi@kampus.ac.id' },
-                  password: { type: 'string', example: 'password123' },
+                  pic: { type: 'string', example: 'password123' },
                   role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'mahasiswa' },
                 },
               },
@@ -144,17 +144,17 @@ export const swaggerSpec = {
       post: {
         tags: ['Authentication'],
         summary: 'Login User',
-        description: 'Autentikasi menggunakan NIM/NIDN/Email dan password untuk mendapatkan JWT token',
+        description: 'Autentikasi menggunakan NIM/NIDN/Email dan kata sandi (kolom pic) untuk mendapatkan JWT token',
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['identifier', 'password'],
+                required: ['identifier', 'pic'],
                 properties: {
                   identifier: { type: 'string', example: '2201010023' },
-                  password: { type: 'string', example: 'password123' },
+                  pic: { type: 'string', example: 'password123' },
                 },
               },
             },

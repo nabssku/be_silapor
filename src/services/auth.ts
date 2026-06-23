@@ -22,11 +22,11 @@ export async function findUserByNimOrEmail(identifier: string) {
 }
 
 /**
- * Mendaftarkan user baru ke database (dengan hashing password).
+ * Mendaftarkan user baru ke database (dengan hashing password yang disimpan di kolom pic).
  */
 export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'createdAt' | 'updatedAt'>) {
   const saltRounds = 10;
-  const hashedPassword = await hash(data.password, saltRounds);
+  const hashedPassword = await hash(data.pic, saltRounds);
 
   const result = await db
     .insert(users)
@@ -34,7 +34,7 @@ export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'c
       name: data.name,
       nimNidn: data.nimNidn,
       email: data.email,
-      password: hashedPassword,
+      pic: hashedPassword,
       role: data.role,
     })
     .returning({

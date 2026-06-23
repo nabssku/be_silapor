@@ -32,7 +32,7 @@ export async function registerController(c: Context) {
       name: body.name,
       nimNidn: body.nimNidn,
       email: body.email,
-      password: body.password,
+      pic: body.pic,
       role: body.role,
     });
 
@@ -66,8 +66,8 @@ export async function loginController(c: Context) {
       }, 400);
     }
 
-    // 2. Verifikasi password
-    const isPasswordValid = await compare(body.password, user.password);
+    // 2. Verifikasi password (menggunakan kolom pic)
+    const isPasswordValid = await compare(body.pic, user.pic);
     if (!isPasswordValid) {
       return c.json({
         success: false,
