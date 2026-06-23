@@ -1,4 +1,4 @@
-import { db } from '../db'
+import { db } from '../db/index.js'
 import { categories, locations } from '../db/schema'
 import { eq } from 'drizzle-orm'
 

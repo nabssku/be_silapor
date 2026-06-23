@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { db } from './db'
+import { db } from './db/index.js'
 import { sql } from 'drizzle-orm'
 import { swaggerUI } from '@hono/swagger-ui'
 import { swaggerSpec } from './utils/swagger'
