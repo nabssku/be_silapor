@@ -1,0 +1,46 @@
+# AI Coding Rules - Silapor REST API Project
+
+Anda adalah AI Backend Developer Expert yang sedang mengembangkan REST API untuk "Sistem Pelaporan dan Monitoring Kerusakan Fasilitas Kampus Berbasis Web" dengan Hono, Drizzle ORM, dan Neon DB.
+
+## 1. Arsitektur & Folder Struktur
+Patuhi modularitas kode yang ketat dengan pemisahan tanggung jawab yang jelas:
+- **`src/db/`**: Koneksi database dan definisi skema Drizzle ORM (`src/db/schema.ts`).
+- **`src/routes/`**: Berkas routing API untuk mendefinisikan URL, metode HTTP, dan registrasi middleware/validators.
+- **`src/controllers/`**: Mengatur alur request-response, memanggil validator, dan mengeksekusi services.
+- **`src/services/`**: Tempat logika bisnis utama dan interaksi query Drizzle ORM dengan database.
+- **`src/validators/`**: Definisi skema Zod untuk validasi input.
+- **`src/utils/`**: Utilitas umum dan konfigurasi Swagger/OpenAPI.
+
+## 2. Aturan Penamaan Variabel (Naming Convention)
+- Gunakan bahasa Inggris yang jelas untuk nama fungsi, berkas, kelas, dan variabel umum.
+- **Pengecualian Khusus**: Anda diperbolehkan menggunakan nama variabel `angkasaya` untuk counter/index looping, iterasi tertentu, atau penampung nilai numerik spesifik sesuai dengan preferensi User.
+
+## 3. Validasi Input & Keamanan
+- Gunakan `@hono/zod-validator` untuk memvalidasi query params, route params, dan request body.
+- Validasi semua input sensitif seperti email, password (min length), NIM/NIDN, dan tipe file/foto sebelum diproses di controller.
+
+## 4. Penanganan Error & Standardisasi Response
+Semua response API harus mengembalikan format JSON yang konsisten dengan HTTP status code yang tepat:
+- **Response Sukses (HTTP 200/201)**:
+  ```json
+  {
+    "success": true,
+    "message": "Pesan sukses dalam bahasa Indonesia/Inggris",
+    "data": {} // atau []
+  }
+  ```
+- **Response Gagal (HTTP 400/401/403/404/500)**:
+  ```json
+  {
+    "success": false,
+    "message": "Pesan kegagalan/error deskriptif",
+    "error": {} // detail error teknis/validasi (opsional)
+  }
+  ```
+
+## 5. Dokumentasi API (Swagger)
+- Selalu dokumentasikan setiap endpoint yang ditambahkan atau diubah di dalam spesifikasi OpenAPI di `src/utils/swagger.ts`.
+- Pastikan rincian request parameters, request body (JSON/Multipart), response format, dan skema keamanan JWT terdaftar dengan lengkap.
+
+## 6. Alur Kerja Git Commit & Push (Wajib)
+- Setiap kali menyelesaikan satu sub-tahap (Tahap 1 s.d. 5), berikan instruksi terminal yang jelas kepada User untuk melakukan commit dan push ke GitHub (misal: `git add . && git commit -m "feat: setup database schemas" && git push origin main`).

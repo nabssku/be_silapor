@@ -1,9 +1,12 @@
 import { Hono } from 'hono'
 import { db } from './db'
 import { sql } from 'drizzle-orm'
+import { swaggerUI } from '@hono/swagger-ui'
+import { swaggerSpec } from './utils/swagger'
 
 const app = new Hono()
 
+// Serve Health Check Endpoint
 app.get('/', (c) => {
   return c.json({
     message: 'Welcome to Silapor REST API!',
@@ -11,6 +14,7 @@ app.get('/', (c) => {
   })
 })
 
+// Serve Database Test Endpoint
 app.get('/test-db', async (c) => {
   try {
     const result = await db.execute(sql`SELECT NOW() as now`);
@@ -27,5 +31,11 @@ app.get('/test-db', async (c) => {
     }, 500)
   }
 })
+
+// Serve Swagger UI Documentation
+app.get('/swagger/json', (c) => {
+  return c.json(swaggerSpec)
+})
+app.get('/swagger', swaggerUI({ url: '/swagger/json' }))
 
 export default app
