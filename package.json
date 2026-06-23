@@ -10,10 +10,13 @@
   "dependencies": {
     "@hono/node-server": "^2.0.6",
     "@hono/swagger-ui": "^0.6.1",
+    "@hono/zod-validator": "^0.8.0",
     "@neondatabase/serverless": "^1.1.0",
+    "bcrypt-ts": "^8.0.1",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.27",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
