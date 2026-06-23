@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 import { swaggerUI } from '@hono/swagger-ui'
 import { swaggerSpec } from './utils/swagger'
 import { authRouter } from './routes/auth'
+import { masterRouter } from './routes/master'
 
 const app = new Hono()
 
@@ -35,6 +36,9 @@ app.get('/test-db', async (c) => {
 
 // Register Auth Routes
 app.route('/api/auth', authRouter)
+
+// Register Master Data CRUD Routes (Categories & Locations)
+app.route('/api', masterRouter)
 
 // Serve Swagger UI Documentation
 app.get('/swagger/json', (c) => {
