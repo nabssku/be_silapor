@@ -1,11 +1,11 @@
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
 import 'dotenv/config';
 
 // Diperlukan agar WebSocket berjalan di lingkungan Node.js (seperti saat running local dev server)
 if (typeof globalThis.WebSocket === 'undefined') {
-  neonConfig.webSocketConstructor = ws;
+  const ws = await import('ws');
+  neonConfig.webSocketConstructor = ws.default || ws;
 }
 
 if (!process.env.DATABASE_URL) {

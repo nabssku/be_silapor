@@ -20,8 +20,9 @@ export const swaggerSpec = {
     '/': {
       get: {
         tags: ['System'],
-        summary: 'Health Check / Welcome',
+        summary: 'Health Check / Welcome [Public]',
         description: 'Mengecek status running dari API Hono',
+        security: [],
         responses: {
           200: {
             description: 'API is running successfully',
@@ -43,8 +44,9 @@ export const swaggerSpec = {
     '/test-db': {
       get: {
         tags: ['System'],
-        summary: 'Test Database Connection',
+        summary: 'Test Database Connection [Public]',
         description: 'Mengecek apakah API Hono terhubung dengan sukses ke Neon DB',
+        security: [],
         responses: {
           200: {
             description: 'Koneksi database berhasil',
@@ -82,9 +84,9 @@ export const swaggerSpec = {
     '/api/auth/register': {
       post: {
         tags: ['Authentication'],
-        summary: 'Register User Baru',
+        summary: 'Register User Baru [Public]',
         description: 'Mendaftarkan user baru (mahasiswa, dosen, admin, teknisi) dengan NIM/NIDN unik. Kolom kata sandi diwakili oleh kolom pic.',
-        security: [], // Tidak butuh token JWT
+        security: [],
         requestBody: {
           required: true,
           content: {
@@ -131,17 +133,6 @@ export const swaggerSpec = {
           },
           400: {
             description: 'Bad Request / NIM atau Email sudah terdaftar',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: { type: 'boolean', example: false },
-                    message: { type: 'string', example: 'NIM/NIDN sudah terdaftar di sistem' },
-                  },
-                },
-              },
-            },
           },
         },
       },
@@ -149,9 +140,9 @@ export const swaggerSpec = {
     '/api/auth/login': {
       post: {
         tags: ['Authentication'],
-        summary: 'Login User',
+        summary: 'Login User [Public]',
         description: 'Autentikasi menggunakan NIM/NIDN/Email dan kata sandi (kolom pic) untuk mendapatkan JWT token',
-        security: [], // Tidak butuh token JWT
+        security: [],
         requestBody: {
           required: true,
           content: {
@@ -200,17 +191,6 @@ export const swaggerSpec = {
           },
           400: {
             description: 'Kredensial salah / User tidak ditemukan',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: { type: 'boolean', example: false },
-                    message: { type: 'string', example: 'Password yang Anda masukkan salah' },
-                  },
-                },
-              },
-            },
           },
         },
       },
@@ -218,42 +198,18 @@ export const swaggerSpec = {
     '/api/categories': {
       get: {
         tags: ['Master Categories'],
-        summary: 'Get All Categories',
-        description: 'Mengambil semua data kategori fasilitas (Wajib Login)',
+        summary: 'Get All Categories [Semua Role (Wajib Login)]',
+        description: 'Mengambil semua data kategori fasilitas (Bisa diakses oleh role mahasiswa, dosen, admin, dan teknisi)',
         responses: {
           200: {
             description: 'Berhasil mengambil daftar kategori',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: { type: 'boolean', example: true },
-                    message: { type: 'string', example: 'Berhasil mengambil daftar kategori' },
-                    data: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'integer', example: 1 },
-                          name: { type: 'string', example: 'Listrik / AC' },
-                          description: { type: 'string', example: 'Masalah kelistrikan, stop kontak, AC mati, dll.' },
-                          createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
-                          updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
       post: {
         tags: ['Master Categories'],
-        summary: 'Create Category',
-        description: 'Membuat kategori fasilitas baru (Khusus Admin)',
+        summary: 'Create Category [Khusus Admin]',
+        description: 'Membuat kategori fasilitas baru (Hanya dapat diakses oleh role admin)',
         requestBody: {
           required: true,
           content: {
@@ -272,31 +228,9 @@ export const swaggerSpec = {
         responses: {
           201: {
             description: 'Kategori berhasil dibuat',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: { type: 'boolean', example: true },
-                    message: { type: 'string', example: 'Kategori berhasil dibuat' },
-                    data: {
-                      type: 'object',
-                      properties: {
-                        id: { type: 'integer', example: 1 },
-                        name: { type: 'string', example: 'Listrik / AC' },
-                        description: { type: 'string', example: 'Masalah kelistrikan, stop kontak, AC mati, dll.' },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          400: {
-            description: 'Bad Request / Kategori sudah terdaftar',
           },
           403: {
-            description: 'Akses ditolak: Hanya administrator yang diperbolehkan',
+            description: 'Akses ditolak',
           },
         },
       },
@@ -304,39 +238,19 @@ export const swaggerSpec = {
     '/api/categories/{id}': {
       get: {
         tags: ['Master Categories'],
-        summary: 'Get Category By ID',
-        description: 'Mengambil data detail kategori berdasarkan ID (Wajib Login)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
-          },
-        ],
+        summary: 'Get Category By ID [Semua Role (Wajib Login)]',
+        description: 'Mengambil data detail kategori berdasarkan ID (Bisa diakses oleh semua role)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         responses: {
-          200: {
-            description: 'Berhasil mengambil data kategori',
-          },
-          404: {
-            description: 'Kategori tidak ditemukan',
-          },
+          200: { description: 'Berhasil' },
+          404: { description: 'Tidak ditemukan' },
         },
       },
       put: {
         tags: ['Master Categories'],
-        summary: 'Update Category By ID',
-        description: 'Memperbarui data kategori berdasarkan ID (Khusus Admin)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
-          },
-        ],
+        summary: 'Update Category By ID [Khusus Admin]',
+        description: 'Memperbarui data kategori berdasarkan ID (Hanya dapat diakses oleh role admin)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         requestBody: {
           required: true,
           content: {
@@ -344,88 +258,44 @@ export const swaggerSpec = {
               schema: {
                 type: 'object',
                 properties: {
-                  name: { type: 'string', example: 'Kelistrikan & AC' },
-                  description: { type: 'string', example: 'Semua peralatan listrik dan pendingin ruangan' },
+                  name: { type: 'string' },
+                  description: { type: 'string' },
                 },
               },
             },
           },
         },
         responses: {
-          200: {
-            description: 'Kategori berhasil diperbarui',
-          },
-          403: {
-            description: 'Akses ditolak',
-          },
-          404: {
-            description: 'Kategori tidak ditemukan',
-          },
+          200: { description: 'Berhasil' },
+          403: { description: 'Akses ditolak' },
         },
       },
       delete: {
         tags: ['Master Categories'],
-        summary: 'Delete Category By ID',
-        description: 'Menghapus kategori berdasarkan ID (Khusus Admin)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
-          },
-        ],
+        summary: 'Delete Category By ID [Khusus Admin]',
+        description: 'Menghapus kategori berdasarkan ID (Hanya dapat diakses oleh role admin)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         responses: {
-          200: {
-            description: 'Kategori berhasil dihapus',
-          },
-          403: {
-            description: 'Akses ditolak',
-          },
-          404: {
-            description: 'Kategori tidak ditemukan',
-          },
+          200: { description: 'Berhasil' },
+          403: { description: 'Akses ditolak' },
         },
       },
     },
     '/api/locations': {
       get: {
         tags: ['Master Locations'],
-        summary: 'Get All Locations',
-        description: 'Mengambil semua data lokasi (Wajib Login)',
+        summary: 'Get All Locations [Semua Role (Wajib Login)]',
+        description: 'Mengambil semua data lokasi (Bisa diakses oleh role mahasiswa, dosen, admin, dan teknisi)',
         responses: {
           200: {
             description: 'Berhasil mengambil daftar lokasi',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    success: { type: 'boolean', example: true },
-                    message: { type: 'string', example: 'Berhasil mengambil daftar lokasi' },
-                    data: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'integer', example: 1 },
-                          name: { type: 'string', example: 'Gedung Rektorat Lt. 2' },
-                          description: { type: 'string', example: 'Ruang Staff, Dekan, dll.' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
       post: {
         tags: ['Master Locations'],
-        summary: 'Create Location',
-        description: 'Membuat lokasi baru (Khusus Admin)',
+        summary: 'Create Location [Khusus Admin]',
+        description: 'Membuat lokasi baru (Hanya dapat diakses oleh role admin)',
         requestBody: {
           required: true,
           content: {
@@ -442,54 +312,27 @@ export const swaggerSpec = {
           },
         },
         responses: {
-          201: {
-            description: 'Lokasi berhasil dibuat',
-          },
-          400: {
-            description: 'Nama lokasi sudah ada',
-          },
-          403: {
-            description: 'Akses ditolak',
-          },
+          201: { description: 'Lokasi berhasil dibuat' },
+          403: { description: 'Akses ditolak' },
         },
       },
     },
     '/api/locations/{id}': {
       get: {
         tags: ['Master Locations'],
-        summary: 'Get Location By ID',
-        description: 'Mengambil data detail lokasi berdasarkan ID (Wajib Login)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
-          },
-        ],
+        summary: 'Get Location By ID [Semua Role (Wajib Login)]',
+        description: 'Mengambil data detail lokasi berdasarkan ID (Bisa diakses oleh semua role)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         responses: {
-          200: {
-            description: 'Berhasil mengambil data lokasi',
-          },
-          404: {
-            description: 'Lokasi tidak ditemukan',
-          },
+          200: { description: 'Berhasil' },
+          404: { description: 'Tidak ditemukan' },
         },
       },
       put: {
         tags: ['Master Locations'],
-        summary: 'Update Location By ID',
-        description: 'Memperbarui data lokasi berdasarkan ID (Khusus Admin)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
-          },
-        ],
+        summary: 'Update Location By ID [Khusus Admin]',
+        description: 'Memperbarui data lokasi berdasarkan ID (Hanya dapat diakses oleh role admin)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         requestBody: {
           required: true,
           content: {
@@ -497,48 +340,162 @@ export const swaggerSpec = {
               schema: {
                 type: 'object',
                 properties: {
-                  name: { type: 'string', example: 'Gedung Rektorat Lantai 2' },
-                  description: { type: 'string', example: 'Ruang Staff Akademik' },
+                  name: { type: 'string' },
+                  description: { type: 'string' },
                 },
               },
             },
           },
         },
         responses: {
-          200: {
-            description: 'Lokasi berhasil diperbarui',
-          },
-          403: {
-            description: 'Akses ditolak',
-          },
-          404: {
-            description: 'Lokasi tidak ditemukan',
-          },
+          200: { description: 'Berhasil' },
+          403: { description: 'Akses ditolak' },
         },
       },
       delete: {
         tags: ['Master Locations'],
-        summary: 'Delete Location By ID',
-        description: 'Menghapus lokasi berdasarkan ID (Khusus Admin)',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-            example: 1,
+        summary: 'Delete Location By ID [Khusus Admin]',
+        description: 'Menghapus lokasi berdasarkan ID (Hanya dapat diakses oleh role admin)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        responses: {
+          200: { description: 'Berhasil' },
+          403: { description: 'Akses ditolak' },
+        },
+      },
+    },
+    '/api/reports': {
+      post: {
+        tags: ['Reports'],
+        summary: 'Create Report (Kirim Laporan) [Semua Role (Wajib Login)]',
+        description: 'Mengirimkan laporan kerusakan fasilitas kampus baru beserta foto. Input menggunakan format multipart/form-data. (Bisa diakses oleh semua role, umumnya mahasiswa dan dosen)',
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                required: ['title', 'description', 'categoryId', 'locationId', 'photo'],
+                properties: {
+                  title: { type: 'string', example: 'Kipas Angin Kelas Rusak' },
+                  description: { type: 'string', example: 'Kipas angin di kelas 3.02 bergoyang kencang dan tidak berputar.' },
+                  categoryId: { type: 'string', example: '1' },
+                  locationId: { type: 'string', example: '2' },
+                  photo: { type: 'string', format: 'binary', description: 'File gambar kerusakan (jpg, png, dll.)' },
+                },
+              },
+            },
           },
+        },
+        responses: {
+          201: {
+            description: 'Laporan berhasil dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Laporan kerusakan berhasil dikirim' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'b1d034ee-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        title: { type: 'string', example: 'Kipas Angin Kelas Rusak' },
+                        description: { type: 'string', example: 'Kipas angin di kelas 3.02 bergoyang kencang dan tidak berputar.' },
+                        photoUrl: { type: 'string', example: 'https://res.cloudinary.com/demo/image/upload/v1570975200/sample.jpg' },
+                        status: { type: 'string', example: 'pending' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validasi input gagal / Foto tidak diunggah',
+          },
+        },
+      },
+      get: {
+        tags: ['Reports'],
+        summary: 'Get All Reports [Semua Role (Wajib Login)]',
+        description: 'Mengambil daftar seluruh laporan kerusakan dengan filter opsional (Bisa diakses oleh semua role: mahasiswa, dosen, admin, teknisi)',
+        parameters: [
+          { name: 'status', in: 'query', required: false, schema: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'] } },
+          { name: 'categoryId', in: 'query', required: false, schema: { type: 'integer' } },
+          { name: 'locationId', in: 'query', required: false, schema: { type: 'integer' } },
         ],
         responses: {
           200: {
-            description: 'Lokasi berhasil dihapus',
+            description: 'Berhasil mengambil daftar laporan',
           },
-          403: {
-            description: 'Akses ditolak',
+        },
+      },
+    },
+    '/api/reports/{id}': {
+      get: {
+        tags: ['Reports'],
+        summary: 'Get Report By ID [Semua Role (Wajib Login)]',
+        description: 'Mengambil rincian detail laporan kerusakan beserta feedback yang terkait (Bisa diakses oleh semua role)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          200: { description: 'Berhasil' },
+          404: { description: 'Laporan tidak ditemukan' },
+        },
+      },
+    },
+    '/api/reports/{id}/status': {
+      put: {
+        tags: ['Reports'],
+        summary: 'Update Report Status [Khusus Admin / Teknisi]',
+        description: 'Memperbarui status penanganan laporan (Hanya dapat diakses oleh role admin dan teknisi)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['status'],
+                properties: {
+                  status: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'], example: 'in_progress' },
+                },
+              },
+            },
           },
-          404: {
-            description: 'Lokasi tidak ditemukan',
+        },
+        responses: {
+          200: { description: 'Status berhasil diperbarui' },
+          403: { description: 'Akses ditolak: Hanya admin atau teknisi yang diperbolehkan mengubah status' },
+          404: { description: 'Laporan tidak ditemukan' },
+        },
+      },
+    },
+    '/api/reports/{id}/feedbacks': {
+      post: {
+        tags: ['Reports'],
+        summary: 'Submit Feedback [Khusus Pelapor Asli (Pembuat Laporan)]',
+        description: 'Mengirimkan umpan balik komentar & rating kepuasan (1-5) untuk laporan yang sudah berstatus resolved (Hanya dapat diakses oleh user pembuat laporan asli)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['comment', 'rating'],
+                properties: {
+                  comment: { type: 'string', example: 'Pengerjaan cepat sekali, AC sekarang sudah dingin kembali!' },
+                  rating: { type: 'integer', minimum: 1, maximum: 5, example: 5 },
+                },
+              },
+            },
           },
+        },
+        responses: {
+          201: { description: 'Feedback berhasil dikirim' },
+          400: { description: 'Laporan belum diselesaikan / validasi gagal' },
+          403: { description: 'Bukan pelapor asli' },
         },
       },
     },

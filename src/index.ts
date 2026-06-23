@@ -5,6 +5,7 @@ import { swaggerUI } from '@hono/swagger-ui'
 import { swaggerSpec } from './utils/swagger'
 import { authRouter } from './routes/auth'
 import { masterRouter } from './routes/master'
+import { reportRouter } from './routes/report'
 
 const app = new Hono()
 
@@ -39,6 +40,9 @@ app.route('/api/auth', authRouter)
 
 // Register Master Data CRUD Routes (Categories & Locations)
 app.route('/api', masterRouter)
+
+// Register Core Feature Routes (Reports & Feedbacks)
+app.route('/api', reportRouter)
 
 // Serve Swagger UI Documentation
 app.get('/swagger/json', (c) => {
