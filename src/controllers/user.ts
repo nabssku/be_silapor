@@ -35,6 +35,12 @@ export async function getAllUsersController(c: Context) {
 export async function getUserByIdController(c: Context) {
   try {
     const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
     const user = await getUserById(id);
     if (!user) {
       return c.json({
@@ -101,6 +107,12 @@ export async function createUserController(c: Context) {
 export async function updateUserController(c: Context) {
   try {
     const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
     const body = (c.req.valid as any)('json');
 
     // Cek apakah user ada
@@ -155,6 +167,12 @@ export async function updateUserController(c: Context) {
 export async function deleteUserController(c: Context) {
   try {
     const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
 
     // Cek apakah user ada
     const user = await getUserById(id);
