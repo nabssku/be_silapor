@@ -12,7 +12,7 @@ import {
   createLocation,
   updateLocation,
   deleteLocation
-} from '../services/master'
+} from '../services/master.js'
 
 // ==========================================
 // 1. CONTROLLERS KATEGORI (CATEGORIES)

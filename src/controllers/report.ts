@@ -1,17 +1,17 @@
 import { Context } from 'hono'
-import { uploadToCloudinary } from '../utils/cloudinary'
+import { uploadToCloudinary } from '../utils/cloudinary.js'
 import {
   createReportSchema,
   updateReportStatusSchema,
   createFeedbackSchema
-} from '../validators/report'
+} from '../validators/report.js'
 import {
   createReport,
   getReports,
   getReportById,
   updateReportStatus,
   createReportFeedback
-} from '../services/report'
+} from '../services/report.js'
 
 /**
  * Controller untuk membuat laporan baru (menerima multipart/form-data).

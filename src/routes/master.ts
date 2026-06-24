@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { authMiddleware, adminMiddleware } from '../middleware/auth'
+import { authMiddleware, adminMiddleware } from '../middleware/auth.js'
 import {
   createCategorySchema,
   updateCategorySchema,
   createLocationSchema,
   updateLocationSchema
-} from '../validators/master'
+} from '../validators/master.js'
 import {
   getAllCategoriesController,
   getCategoryByIdController,
@@ -18,7 +18,7 @@ import {
   createLocationController,
   updateLocationController,
   deleteLocationController
-} from '../controllers/master'
+} from '../controllers/master.js'
 
 const masterRouter = new Hono()
 

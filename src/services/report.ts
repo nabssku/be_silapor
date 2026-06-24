@@ -1,5 +1,5 @@
 import { db } from '../db/index.js'
-import { reports, users, categories, locations, reportFeedbacks } from '../db/schema'
+import { reports, users, categories, locations, reportFeedbacks } from '../db/schema.js'
 import { eq, and } from 'drizzle-orm'
 
 /**

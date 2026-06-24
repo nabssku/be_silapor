@@ -1,5 +1,5 @@
 import { Context } from 'hono'
-import { findUserByNimOrEmail, createUser } from '../services/auth'
+import { findUserByNimOrEmail, createUser } from '../services/auth.js'
 import { compare } from 'bcrypt-ts'
 import { sign } from 'hono/jwt'
 

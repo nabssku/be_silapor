@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth'
+import { authMiddleware } from '../middleware/auth.js'
 import {
   createReportController,
   getReportsController,
   getReportByIdController,
   updateReportStatusController,
   createFeedbackController
-} from '../controllers/report'
+} from '../controllers/report.js'
 
 const reportRouter = new Hono()
 

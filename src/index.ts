@@ -2,10 +2,10 @@ import { Hono } from 'hono'
 import { db } from './db/index.js'
 import { sql } from 'drizzle-orm'
 import { swaggerUI } from '@hono/swagger-ui'
-import { swaggerSpec } from './utils/swagger'
-import { authRouter } from './routes/auth'
-import { masterRouter } from './routes/master'
-import { reportRouter } from './routes/report'
+import { swaggerSpec } from './utils/swagger.js'
+import { authRouter } from './routes/auth.js'
+import { masterRouter } from './routes/master.js'
+import { reportRouter } from './routes/report.js'
 
 const app = new Hono()
 
