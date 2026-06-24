@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth.js'
 import { masterRouter } from './routes/master.js'
 import { reportRouter } from './routes/report.js'
 import { dashboardRouter } from './routes/dashboard.js'
+import { userRouter } from './routes/user.js'
 
 const app = new Hono()
 
@@ -47,6 +48,9 @@ app.route('/api', reportRouter)
 
 // Register Dashboard Route
 app.route('/api', dashboardRouter)
+
+// Register User CRUD Routes (Admin Only)
+app.route('/api', userRouter)
 
 // Serve Swagger UI Documentation
 app.get('/swagger/json', (c) => {

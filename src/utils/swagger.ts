@@ -528,6 +528,229 @@ export const swaggerSpec = {
         }
       }
     },
+    '/api/users': {
+      get: {
+        tags: ['Users Management'],
+        summary: 'Get All Users [Khusus Admin]',
+        description: 'Mengambil semua daftar pengguna yang terdaftar di dalam sistem.',
+        responses: {
+          200: {
+            description: 'Daftar pengguna berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Berhasil mengambil daftar user' },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'd034eebb-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                          name: { type: 'string', example: 'Budi Santoso' },
+                          nimNidn: { type: 'string', example: '2201010023' },
+                          email: { type: 'string', example: 'budi@kampus.ac.id' },
+                          role: { type: 'string', example: 'mahasiswa' },
+                          createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                          updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          401: { description: 'Pengguna tidak terautentikasi / Token JWT tidak valid' },
+          403: { description: 'Akses ditolak: Hanya admin yang diperbolehkan' }
+        }
+      },
+      post: {
+        tags: ['Users Management'],
+        summary: 'Create User Baru [Khusus Admin]',
+        description: 'Membuat akun pengguna baru dengan role tertentu.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['name', 'nimNidn', 'email', 'pic', 'role'],
+                properties: {
+                  name: { type: 'string', example: 'Dedi Irawan' },
+                  nimNidn: { type: 'string', example: '2201010044' },
+                  email: { type: 'string', example: 'dedi@kampus.ac.id' },
+                  pic: { type: 'string', example: 'password123', description: 'Password akun user' },
+                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'teknisi' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: {
+            description: 'User berhasil dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'User berhasil dibuat' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'd034eebb-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        name: { type: 'string', example: 'Dedi Irawan' },
+                        nimNidn: { type: 'string', example: '2201010044' },
+                        email: { type: 'string', example: 'dedi@kampus.ac.id' },
+                        role: { type: 'string', example: 'teknisi' },
+                        createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                        updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: { description: 'Validasi gagal / NIM atau Email sudah terdaftar' },
+          401: { description: 'Pengguna tidak terautentikasi' },
+          403: { description: 'Akses ditolak' }
+        }
+      }
+    },
+    '/api/users/{id}': {
+      get: {
+        tags: ['Users Management'],
+        summary: 'Get User By ID [Khusus Admin]',
+        description: 'Mengambil detail informasi satu pengguna berdasarkan ID.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          200: {
+            description: 'Detail user berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Berhasil mengambil detail user' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'd034eebb-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        name: { type: 'string', example: 'Budi Santoso' },
+                        nimNidn: { type: 'string', example: '2201010023' },
+                        email: { type: 'string', example: 'budi@kampus.ac.id' },
+                        role: { type: 'string', example: 'mahasiswa' },
+                        createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                        updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          401: { description: 'Pengguna tidak terautentikasi' },
+          403: { description: 'Akses ditolak' },
+          404: { description: 'User tidak ditemukan' }
+        }
+      },
+      put: {
+        tags: ['Users Management'],
+        summary: 'Update User By ID [Khusus Admin]',
+        description: 'Memperbarui data pengguna berdasarkan ID.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Budi Santoso Nugroho' },
+                  nimNidn: { type: 'string', example: '2201010023' },
+                  email: { type: 'string', example: 'budi_new@kampus.ac.id' },
+                  pic: { type: 'string', example: 'newpassword123', description: 'Password baru (opsional)' },
+                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'mahasiswa' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'User berhasil diperbarui',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'User berhasil diperbarui' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'd034eebb-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        name: { type: 'string', example: 'Budi Santoso Nugroho' },
+                        nimNidn: { type: 'string', example: '2201010023' },
+                        email: { type: 'string', example: 'budi_new@kampus.ac.id' },
+                        role: { type: 'string', example: 'mahasiswa' },
+                        createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                        updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: { description: 'Validasi gagal / NIM atau Email sudah terdaftar pada user lain' },
+          401: { description: 'Pengguna tidak terautentikasi' },
+          403: { description: 'Akses ditolak' },
+          404: { description: 'User tidak ditemukan' }
+        }
+      },
+      delete: {
+        tags: ['Users Management'],
+        summary: 'Delete User By ID [Khusus Admin]',
+        description: 'Menghapus akun pengguna dari sistem berdasarkan ID.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: {
+          200: {
+            description: 'User berhasil dihapus',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'User berhasil dihapus' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'd034eebb-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        name: { type: 'string', example: 'Budi Santoso Nugroho' },
+                        nimNidn: { type: 'string', example: '2201010023' },
+                        email: { type: 'string', example: 'budi_new@kampus.ac.id' },
+                        role: { type: 'string', example: 'mahasiswa' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          401: { description: 'Pengguna tidak terautentikasi' },
+          403: { description: 'Akses ditolak' },
+          404: { description: 'User tidak ditemukan' }
+        }
+      }
+    },
   },
   components: {
     securitySchemes: {
