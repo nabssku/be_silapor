@@ -25,6 +25,7 @@ export async function createReportController(c: Context) {
     const categoryIdRaw = body.categoryId as string;
     const locationIdRaw = body.locationId as string;
     const photoFile = body.photo as File | undefined;
+    const notes = body.notes as string | undefined;
 
     // 1. Validasi field wajib
     const parsedData = createReportSchema.safeParse({
@@ -32,6 +33,7 @@ export async function createReportController(c: Context) {
       description,
       categoryId: categoryIdRaw,
       locationId: locationIdRaw,
+      notes,
     });
 
     if (!parsedData.success) {
@@ -80,6 +82,7 @@ export async function createReportController(c: Context) {
       categoryId: parsedData.data.categoryId,
       locationId: parsedData.data.locationId,
       status: 'pending', // default status
+      notes: parsedData.data.notes || null,
     });
 
     return c.json({
@@ -196,7 +199,7 @@ export async function updateReportStatusController(c: Context) {
       }, 400);
     }
 
-    const updated = await updateReportStatus(id, parsed.data.status);
+    const updated = await updateReportStatus(id, parsed.data.status, parsed.data.notes);
     if (!updated) {
       return c.json({
         success: false,

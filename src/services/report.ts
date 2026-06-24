@@ -21,6 +21,7 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
       description: reports.description,
       photoUrl: reports.photoUrl,
       status: reports.status,
+      notes: reports.notes,
       createdAt: reports.createdAt,
       updatedAt: reports.updatedAt,
       reporter: {
@@ -74,6 +75,7 @@ export async function getReportById(id: string) {
       description: reports.description,
       photoUrl: reports.photoUrl,
       status: reports.status,
+      notes: reports.notes,
       createdAt: reports.createdAt,
       updatedAt: reports.updatedAt,
       reporter: {
@@ -131,10 +133,10 @@ export async function getReportById(id: string) {
 /**
  * Mengubah status laporan (Khusus Admin / Teknisi).
  */
-export async function updateReportStatus(id: string, status: any) {
+export async function updateReportStatus(id: string, status: any, notes?: string) {
   const result = await db
     .update(reports)
-    .set({ status, updatedAt: new Date() })
+    .set({ status, notes, updatedAt: new Date() })
     .where(eq(reports.id, id))
     .returning();
   return result[0] || null;

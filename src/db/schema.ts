@@ -41,6 +41,7 @@ export const reports = pgTable('reports', {
   description: text('description').notNull(),
   photoUrl: text('photo_url'),
   status: statusEnum('status').default('pending').notNull(),
+  notes: text('notes'),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   categoryId: integer('category_id').references(() => categories.id, { onDelete: 'restrict' }).notNull(),
   locationId: integer('location_id').references(() => locations.id, { onDelete: 'restrict' }).notNull(),

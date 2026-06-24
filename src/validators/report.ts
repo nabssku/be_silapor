@@ -11,12 +11,14 @@ export const createReportSchema = z.object({
     z.number().int(),
     z.string().regex(/^\d+$/, { message: 'Location ID harus berupa angka' }).transform(Number)
   ]),
+  notes: z.string().optional(),
 });
 
 export const updateReportStatusSchema = z.object({
   status: z.enum(['pending', 'in_progress', 'resolved', 'rejected'], {
     message: 'Status harus berupa pending, in_progress, resolved, atau rejected',
   }),
+  notes: z.string().optional(),
 });
 
 export const createFeedbackSchema = z.object({

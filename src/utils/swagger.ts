@@ -381,6 +381,7 @@ export const swaggerSpec = {
                   categoryId: { type: 'string', example: '1' },
                   locationId: { type: 'string', example: '2' },
                   photo: { type: 'string', format: 'binary', description: 'File gambar kerusakan (jpg, png, dll.)' },
+                  notes: { type: 'string', example: 'Kondisi sangat mendesak karena kelas digunakan setiap hari.', description: 'Catatan tambahan saat membuat laporan (opsional)' },
                 },
               },
             },
@@ -404,6 +405,7 @@ export const swaggerSpec = {
                         description: { type: 'string', example: 'Kipas angin di kelas 3.02 bergoyang kencang dan tidak berputar.' },
                         photoUrl: { type: 'string', example: 'https://res.cloudinary.com/demo/image/upload/v1570975200/sample.jpg' },
                         status: { type: 'string', example: 'pending' },
+                        notes: { type: 'string', nullable: true, example: 'Kondisi sangat mendesak karena kelas digunakan setiap hari.' },
                       },
                     },
                   },
@@ -459,6 +461,7 @@ export const swaggerSpec = {
                 required: ['status'],
                 properties: {
                   status: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'], example: 'in_progress' },
+                  notes: { type: 'string', example: 'Teknisi sedang menjadwalkan perbaikan AC pada siang hari.', description: 'Catatan tambahan terkait perubahan status laporan (opsional)' },
                 },
               },
             },
@@ -530,7 +533,7 @@ export const swaggerSpec = {
     },
     '/api/users': {
       get: {
-        tags: ['Users Management'],
+        tags: ['Master Users'],
         summary: 'Get All Users [Khusus Admin]',
         description: 'Mengambil semua daftar pengguna yang terdaftar di dalam sistem.',
         responses: {
@@ -568,7 +571,7 @@ export const swaggerSpec = {
         }
       },
       post: {
-        tags: ['Users Management'],
+        tags: ['Master Users'],
         summary: 'Create User Baru [Khusus Admin]',
         description: 'Membuat akun pengguna baru dengan role tertentu.',
         requestBody: {
@@ -624,7 +627,7 @@ export const swaggerSpec = {
     },
     '/api/users/{id}': {
       get: {
-        tags: ['Users Management'],
+        tags: ['Master Users'],
         summary: 'Get User By ID [Khusus Admin]',
         description: 'Mengambil detail informasi satu pengguna berdasarkan ID.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
@@ -661,7 +664,7 @@ export const swaggerSpec = {
         }
       },
       put: {
-        tags: ['Users Management'],
+        tags: ['Master Users'],
         summary: 'Update User By ID [Khusus Admin]',
         description: 'Memperbarui data pengguna berdasarkan ID.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
@@ -716,7 +719,7 @@ export const swaggerSpec = {
         }
       },
       delete: {
-        tags: ['Users Management'],
+        tags: ['Master Users'],
         summary: 'Delete User By ID [Khusus Admin]',
         description: 'Menghapus akun pengguna dari sistem berdasarkan ID.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
