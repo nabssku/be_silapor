@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { db } from './db/index.js'
 import { sql } from 'drizzle-orm'
 import { swaggerUI } from '@hono/swagger-ui'
@@ -10,6 +11,26 @@ import { dashboardRouter } from './routes/dashboard.js'
 import { userRouter } from './routes/user.js'
 
 const app = new Hono()
+
+// Configure CORS middleware
+app.use(
+  '*',
+  cors({
+    origin: (origin) => {
+      const allowedOrigin = process.env.CORS_ORIGIN || '*'
+      if (allowedOrigin === '*') {
+        return origin
+      }
+      const allowedOrigins = allowedOrigin.split(',').map((o) => o.trim())
+      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
+    },
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    exposeHeaders: ['Content-Length'],
+    maxAge: 600,
+    credentials: true,
+  })
+)
 
 // Serve Health Check Endpoint
 app.get('/', (c) => {
