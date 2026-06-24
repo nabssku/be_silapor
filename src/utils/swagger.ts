@@ -499,6 +499,35 @@ export const swaggerSpec = {
         },
       },
     },
+    '/api/dashboard': {
+      get: {
+        tags: ['Dashboard'],
+        summary: 'Get Dashboard Summary [Semua Role (Wajib Login)]',
+        description: 'Mengambil data ringkasan dashboard yang disesuaikan secara dinamis berdasarkan role JWT token pengguna. Struktur response berbeda untuk admin, teknisi, dan reporter (mahasiswa/dosen).',
+        responses: {
+          200: {
+            description: 'Berhasil mengambil ringkasan dashboard',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Berhasil mengambil ringkasan dashboard' },
+                    data: {
+                      type: 'object',
+                      description: 'Struktur data summary dinamis berdasarkan role (admin, teknisi, reporter).',
+                    }
+                  }
+                }
+              }
+            }
+          },
+          401: { description: 'Pengguna tidak terautentikasi / Token JWT tidak valid' },
+          403: { description: 'Akses ditolak / Role tidak valid' }
+        }
+      }
+    },
   },
   components: {
     securitySchemes: {
