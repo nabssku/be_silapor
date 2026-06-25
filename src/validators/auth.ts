@@ -14,3 +14,9 @@ export const loginSchema = z.object({
   identifier: z.string().min(3, { message: 'NIM/NIDN atau Email minimal harus 3 karakter' }),
   pic: z.string().min(6, { message: 'Password minimal harus 6 karakter' }),
 });
+
+export const loginInfokhsSchema = z.object({
+  xuser: z.string().min(3, { message: 'NIM minimal harus 3 karakter' }),
+  xpassword: z.string().min(6, { message: 'Password minimal harus 6 karakter' }),
+});
+

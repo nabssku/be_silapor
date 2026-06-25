@@ -111,3 +111,103 @@ export async function loginController(c: Context) {
     }, 500);
   }
 }
+
+/**
+ * Controller untuk menangani login user via API UMM (InfoKHS).
+ */
+export async function loginInfokhsController(c: Context) {
+  try {
+    const body = (c.req.valid as any)('json');
+    const { xuser, xpassword } = body;
+
+    // 1. Kirim request POST ke API UMM (apiv2.umm.ac.id)
+    const response = await fetch('https://apiv2.umm.ac.id/v2/mahasiswa/login', {
+      method: 'POST',
+      headers: {
+        'x-signature': 'HLD5yK4ZKun8jmuDJHSzEAsVuUqV8hQ7GbxNAqEN3bY=',
+        'Content-Type': 'application/json',
+        'Connection': 'keep-alive',
+        'x-timestamp': '2026-06-25 13:09:23',
+        'x-userkey': 'e48e16475b1073b6b79bf4503bf046a4',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        'User-Agent': 'myUMMStudents/5 CFNetwork/3860.600.12 Darwin/25.5.0'
+      },
+      body: JSON.stringify({
+        xuser,
+        xpassword,
+        device_model: 2,
+        device_id: 'iPhone12,1',
+        nama_device: 'iPhone',
+        uniq_id: 'B850BA89-CC1E-4135-927A-67CBBDF573C2'
+      })
+    });
+
+    if (!response.ok) {
+      return c.json({
+        success: false,
+        message: 'Gagal menghubungi server UMM',
+        error: `HTTP error! status: ${response.status}`
+      }, 400);
+    }
+
+    const result = (await response.json()) as any;
+
+    // 2. Validasi response dari API UMM
+    if (result.status !== 1 || result.kode !== '000') {
+      return c.json({
+        success: false,
+        message: result.message || 'Login via InfoKHS gagal',
+      }, 401);
+    }
+
+    const { nim, nama, fakultas } = result.data;
+
+    // 3. Cek apakah user sudah terdaftar di sistem lokal
+    let user = await findUserByNimOrEmail(nim);
+    if (!user) {
+      // Auto-register user baru jika belum terdaftar
+      const generatedEmail = `${nim}@student.umm.ac.id`;
+      user = await createUser({
+        name: nama,
+        nimNidn: nim,
+        email: generatedEmail,
+        pic: xpassword,
+        role: 'mahasiswa',
+      });
+    }
+
+    // 4. Generate JWT Token (masa aktif 24 jam)
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET is not configured in environment variables');
+    }
+
+    const payload = {
+      id: user.id,
+      role: user.role,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 Jam
+    };
+
+    const token = await sign(payload, jwtSecret);
+
+    return c.json({
+      success: true,
+      message: 'Login berhasil',
+      data: {
+        nim: user.nimNidn,
+        nama: user.name,
+        fakultas: fakultas || 'Fakultas Teknik',
+        token,
+      },
+    }, 200);
+
+  } catch (error: any) {
+    return c.json({
+      success: false,
+      message: 'Gagal melakukan login via InfoKHS',
+      error: error.message,
+    }, 500);
+  }
+}
+

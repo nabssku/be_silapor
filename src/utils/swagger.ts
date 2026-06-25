@@ -195,6 +195,60 @@ export const swaggerSpec = {
         },
       },
     },
+    '/api/auth/infokhs': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Login User via InfoKHS (API UMM) [Public]',
+        description: 'Autentikasi mahasiswa menggunakan NIM (xuser) dan password (xpassword) yang diteruskan ke API UMM (InfoKHS). Jika berhasil, user akan otomatis didaftarkan (bila belum terdaftar) dan mendapatkan local JWT token.',
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['xuser', 'xpassword'],
+                properties: {
+                  xuser: { type: 'string', example: '202410370110357', description: 'NIM Mahasiswa' },
+                  xpassword: { type: 'string', example: '15841268', description: 'Password/PIC Mahasiswa' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Login berhasil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Login berhasil' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        nim: { type: 'string', example: '202410370110357' },
+                        nama: { type: 'string', example: 'Nabil Sahsada Suratno' },
+                        fakultas: { type: 'string', example: 'Fakultas Teknik' },
+                        token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Login via InfoKHS gagal (kredensial salah)',
+          },
+          400: {
+            description: 'Gagal menghubungi server UMM / Input tidak valid',
+          },
+        },
+      },
+    },
     '/api/categories': {
       get: {
         tags: ['Master Categories'],
