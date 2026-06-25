@@ -118,7 +118,7 @@ export async function loginController(c: Context) {
 export async function loginInfokhsController(c: Context) {
   try {
     const body = (c.req.valid as any)('json');
-    const { xuser, xpassword } = body;
+    const { nim: inputNim, pic: inputPic } = body;
 
     // 1. Kirim request POST ke API UMM (apiv2.umm.ac.id)
     const response = await fetch('https://apiv2.umm.ac.id/v2/mahasiswa/login', {
@@ -134,8 +134,8 @@ export async function loginInfokhsController(c: Context) {
         'User-Agent': 'myUMMStudents/5 CFNetwork/3860.600.12 Darwin/25.5.0'
       },
       body: JSON.stringify({
-        xuser,
-        xpassword,
+        xuser: inputNim,
+        xpassword: inputPic,
         device_model: 2,
         device_id: 'iPhone12,1',
         nama_device: 'iPhone',
@@ -195,7 +195,7 @@ export async function loginInfokhsController(c: Context) {
         name: nama,
         nimNidn: nim,
         email: userEmail,
-        pic: xpassword,
+        pic: inputPic,
         role: 'mahasiswa',
       });
       userId = newUser.id;
