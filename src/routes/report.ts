@@ -6,6 +6,7 @@ import {
   getReportByIdController,
   updateReportStatusController,
   updateReportPriorityController,
+  assignTechnicianController,
   createFeedbackController
 } from '../controllers/report.js'
 
@@ -28,6 +29,9 @@ reportRouter.put('/reports/:id/status', updateReportStatusController)
 
 // Route: Memperbarui Prioritas Laporan (Khusus Admin)
 reportRouter.put('/reports/:id/priority', adminMiddleware, updateReportPriorityController)
+
+// Route: Menugaskan Teknisi ke Laporan (Khusus Admin)
+reportRouter.put('/reports/:id/assign', adminMiddleware, assignTechnicianController)
 
 // Route: Mengirimkan Feedback (Khusus Reporter Asli)
 reportRouter.post('/reports/:id/feedbacks', createFeedbackController)

@@ -4,6 +4,7 @@ import {
   createReportSchema,
   updateReportStatusSchema,
   updateReportPrioritySchema,
+  assignTechnicianSchema,
   createFeedbackSchema
 } from '../validators/report.js'
 import {
@@ -12,8 +13,10 @@ import {
   getReportById,
   updateReportStatus,
   updateReportPriority,
+  assignTechnician,
   createReportFeedback
 } from '../services/report.js'
+import { getUserById } from '../services/user.js'
 
 /**
  * Controller untuk membuat laporan baru (menerima multipart/form-data).
@@ -276,6 +279,79 @@ export async function updateReportPriorityController(c: Context) {
     return c.json({
       success: false,
       message: 'Gagal memperbarui prioritas laporan',
+      error: error.message,
+    }, 500);
+  }
+}
+
+/**
+ * Controller untuk menugaskan teknisi ke laporan (Hanya Admin).
+ */
+export async function assignTechnicianController(c: Context) {
+  try {
+    const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
+
+    // Ambil JWT payload untuk role check
+    const jwtPayload = c.get('jwtPayload') as { id: string; role: string } | undefined;
+    if (!jwtPayload || jwtPayload.role !== 'admin') {
+      return c.json({
+        success: false,
+        message: 'Akses ditolak: Hanya admin yang diperbolehkan menugaskan teknisi',
+      }, 403);
+    }
+
+    const body = await c.req.json();
+    const parsed = assignTechnicianSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return c.json({
+        success: false,
+        message: 'Validasi penugasan teknisi gagal',
+        error: parsed.error.format(),
+      }, 400);
+    }
+
+    // Jika technicianId disediakan (tidak null), pastikan user tersebut ada dan rolenya adalah teknisi
+    const { technicianId } = parsed.data;
+    if (technicianId) {
+      const targetUser = await getUserById(technicianId);
+      if (!targetUser) {
+        return c.json({
+          success: false,
+          message: 'User teknisi yang ditunjuk tidak ditemukan',
+        }, 400);
+      }
+      if (targetUser.role !== 'teknisi') {
+        return c.json({
+          success: false,
+          message: 'Akses ditolak: User yang ditugaskan harus memiliki role teknisi',
+        }, 400);
+      }
+    }
+
+    const updated = await assignTechnician(id, technicianId);
+    if (!updated) {
+      return c.json({
+        success: false,
+        message: 'Laporan tidak ditemukan',
+      }, 404);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Teknisi berhasil ditugaskan ke laporan',
+      data: updated,
+    }, 200);
+  } catch (error: any) {
+    return c.json({
+      success: false,
+      message: 'Gagal menugaskan teknisi ke laporan',
       error: error.message,
     }, 500);
   }

@@ -11,9 +11,9 @@ export const createReportSchema = z.object({
     z.number().int(),
     z.string().regex(/^\d+$/, { message: 'Location ID harus berupa angka' }).transform(Number)
   ]),
-  priority: z.enum(['low', 'medium', 'high'], {
-    message: 'Prioritas harus berupa low, medium, atau high',
-  }).optional().default('medium'),
+  priority: z.enum(['rendah', 'sedang', 'tinggi'], {
+    message: 'Prioritas harus berupa rendah, sedang, atau tinggi',
+  }).optional().default('sedang'),
   notes: z.string().optional(),
 });
 
@@ -25,9 +25,13 @@ export const updateReportStatusSchema = z.object({
 });
 
 export const updateReportPrioritySchema = z.object({
-  priority: z.enum(['low', 'medium', 'high'], {
-    message: 'Prioritas harus berupa low, medium, atau high',
+  priority: z.enum(['rendah', 'sedang', 'tinggi'], {
+    message: 'Prioritas harus berupa rendah, sedang, atau tinggi',
   }),
+});
+
+export const assignTechnicianSchema = z.object({
+  technicianId: z.string().uuid({ message: 'ID teknisi harus berupa UUID yang valid' }).nullable(),
 });
 
 export const createFeedbackSchema = z.object({

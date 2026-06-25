@@ -1,6 +1,7 @@
 import { db } from '../db/index.js'
 import { reports, users, categories, locations, reportFeedbacks } from '../db/schema.js'
 import { eq, and } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 
 /**
  * Menyimpan laporan kerusakan baru.
@@ -9,6 +10,8 @@ export async function createReport(data: Omit<typeof reports.$inferInsert, 'id' 
   const result = await db.insert(reports).values(data).returning();
   return result[0];
 }
+
+const technicians = alias(users, 'technicians');
 
 /**
  * Mengambil daftar laporan dengan filter (status, categoryId, locationId) beserta relasi datanya.
@@ -41,11 +44,18 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
         name: locations.name,
         description: locations.description,
       },
+      technician: {
+        id: technicians.id,
+        name: technicians.name,
+        email: technicians.email,
+        role: technicians.role,
+      },
     })
     .from(reports)
     .innerJoin(users, eq(reports.userId, users.id))
     .innerJoin(categories, eq(reports.categoryId, categories.id))
-    .innerJoin(locations, eq(reports.locationId, locations.id));
+    .innerJoin(locations, eq(reports.locationId, locations.id))
+    .leftJoin(technicians, eq(reports.technicianId, technicians.id));
 
   const conditions = [];
   if (filters.status) {
@@ -96,11 +106,18 @@ export async function getReportById(id: string) {
         name: locations.name,
         description: locations.description,
       },
+      technician: {
+        id: technicians.id,
+        name: technicians.name,
+        email: technicians.email,
+        role: technicians.role,
+      },
     })
     .from(reports)
     .innerJoin(users, eq(reports.userId, users.id))
     .innerJoin(categories, eq(reports.categoryId, categories.id))
     .innerJoin(locations, eq(reports.locationId, locations.id))
+    .leftJoin(technicians, eq(reports.technicianId, technicians.id))
     .where(eq(reports.id, id))
     .limit(1);
 
@@ -147,10 +164,22 @@ export async function updateReportStatus(id: string, status: any, notes?: string
 /**
  * Mengubah prioritas laporan (Khusus Admin).
  */
-export async function updateReportPriority(id: string, priority: 'low' | 'medium' | 'high') {
+export async function updateReportPriority(id: string, priority: 'rendah' | 'sedang' | 'tinggi') {
   const result = await db
     .update(reports)
     .set({ priority, updatedAt: new Date() })
+    .where(eq(reports.id, id))
+    .returning();
+  return result[0] || null;
+}
+
+/**
+ * Menugaskan teknisi ke laporan (Khusus Admin).
+ */
+export async function assignTechnician(id: string, technicianId: string | null) {
+  const result = await db
+    .update(reports)
+    .set({ technicianId, updatedAt: new Date() })
     .where(eq(reports.id, id))
     .returning();
   return result[0] || null;

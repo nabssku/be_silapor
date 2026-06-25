@@ -3,7 +3,7 @@ import { pgTable, serial, text, varchar, timestamp, pgEnum, uuid, integer } from
 // 1. Enums
 export const roleEnum = pgEnum('user_role', ['mahasiswa', 'dosen', 'admin', 'teknisi']);
 export const statusEnum = pgEnum('report_status', ['pending', 'in_progress', 'resolved', 'rejected']);
-export const priorityEnum = pgEnum('report_priority', ['low', 'medium', 'high']);
+export const priorityEnum = pgEnum('report_priority', ['rendah', 'sedang', 'tinggi']);
 
 // 2. Users Table
 export const users = pgTable('users', {
@@ -42,7 +42,8 @@ export const reports = pgTable('reports', {
   description: text('description').notNull(),
   photoUrl: text('photo_url'),
   status: statusEnum('status').default('pending').notNull(),
-  priority: priorityEnum('priority').default('medium').notNull(),
+  priority: priorityEnum('priority').default('sedang').notNull(),
+  technicianId: uuid('technician_id').references(() => users.id, { onDelete: 'set null' }),
   notes: text('notes'),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   categoryId: integer('category_id').references(() => categories.id, { onDelete: 'restrict' }).notNull(),
