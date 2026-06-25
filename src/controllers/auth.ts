@@ -120,14 +120,49 @@ export async function loginInfokhsController(c: Context) {
     const body = (c.req.valid as any)('json');
     const { nim: inputNim, pic: inputPic } = body;
 
+    // 0. Dapatkan token dinamis untuk x-signature dari API UMM
+    const tokenResponse = await fetch('https://apiv2.umm.ac.id/v2/user/gettoken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: 'myumm',
+        password: 'myummstudentstartfrom2022',
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      return c.json({
+        success: false,
+        message: 'Gagal mendapatkan token keamanan UMM',
+        error: `HTTP error! status: ${tokenResponse.status}`
+      }, 400);
+    }
+
+    const tokenResult = (await tokenResponse.json()) as any;
+    if (tokenResult.status !== 1 || !tokenResult.data?.token) {
+      return c.json({
+        success: false,
+        message: tokenResult.message || 'Gagal mendapatkan token keamanan UMM',
+      }, 400);
+    }
+
+    const xSignature = tokenResult.data.token;
+
+    // Format timestamp secara dinamis (YYYY-MM-DD HH:mm:ss)
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const formattedTimestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
     // 1. Kirim request POST ke API UMM (apiv2.umm.ac.id)
     const response = await fetch('https://apiv2.umm.ac.id/v2/mahasiswa/login', {
       method: 'POST',
       headers: {
-        'x-signature': 'HLD5yK4ZKun8jmuDJHSzEAsVuUqV8hQ7GbxNAqEN3bY=',
+        'x-signature': xSignature,
         'Content-Type': 'application/json',
         'Connection': 'keep-alive',
-        'x-timestamp': '2026-06-25 13:09:23',
+        'x-timestamp': formattedTimestamp,
         'x-userkey': 'e48e16475b1073b6b79bf4503bf046a4',
         'Accept': 'application/json',
         'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
