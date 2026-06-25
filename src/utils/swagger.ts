@@ -381,6 +381,7 @@ export const swaggerSpec = {
                   categoryId: { type: 'string', example: '1' },
                   locationId: { type: 'string', example: '2' },
                   photo: { type: 'string', format: 'binary', description: 'File gambar kerusakan (jpg, png, dll.)' },
+                  priority: { type: 'string', enum: ['low', 'medium', 'high'], example: 'medium', description: 'Tingkat prioritas laporan (opsional, default: medium)' },
                   notes: { type: 'string', example: 'Kondisi sangat mendesak karena kelas digunakan setiap hari.', description: 'Catatan tambahan saat membuat laporan (opsional)' },
                 },
               },
@@ -405,6 +406,7 @@ export const swaggerSpec = {
                         description: { type: 'string', example: 'Kipas angin di kelas 3.02 bergoyang kencang dan tidak berputar.' },
                         photoUrl: { type: 'string', example: 'https://res.cloudinary.com/demo/image/upload/v1570975200/sample.jpg' },
                         status: { type: 'string', example: 'pending' },
+                        priority: { type: 'string', example: 'medium' },
                         notes: { type: 'string', nullable: true, example: 'Kondisi sangat mendesak karena kelas digunakan setiap hari.' },
                       },
                     },
@@ -470,6 +472,56 @@ export const swaggerSpec = {
         responses: {
           200: { description: 'Status berhasil diperbarui' },
           403: { description: 'Akses ditolak: Hanya admin atau teknisi yang diperbolehkan mengubah status' },
+          404: { description: 'Laporan tidak ditemukan' },
+        },
+      },
+    },
+    '/api/reports/{id}/priority': {
+      put: {
+        tags: ['Reports'],
+        summary: 'Update Report Priority [Khusus Admin]',
+        description: 'Memperbarui tingkat prioritas penanganan laporan (Hanya dapat diakses oleh role admin)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['priority'],
+                properties: {
+                  priority: { type: 'string', enum: ['low', 'medium', 'high'], example: 'high', description: 'Tingkat prioritas baru' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Prioritas berhasil diperbarui',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Prioritas laporan berhasil diperbarui' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'b1d034ee-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        title: { type: 'string', example: 'Kipas Angin Kelas Rusak' },
+                        priority: { type: 'string', example: 'high' },
+                        updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Validasi prioritas gagal' },
+          403: { description: 'Akses ditolak: Hanya admin yang diperbolehkan mengubah prioritas' },
           404: { description: 'Laporan tidak ditemukan' },
         },
       },

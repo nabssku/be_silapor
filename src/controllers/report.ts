@@ -3,6 +3,7 @@ import { uploadToCloudinary } from '../utils/cloudinary.js'
 import {
   createReportSchema,
   updateReportStatusSchema,
+  updateReportPrioritySchema,
   createFeedbackSchema
 } from '../validators/report.js'
 import {
@@ -10,6 +11,7 @@ import {
   getReports,
   getReportById,
   updateReportStatus,
+  updateReportPriority,
   createReportFeedback
 } from '../services/report.js'
 
@@ -25,6 +27,7 @@ export async function createReportController(c: Context) {
     const categoryIdRaw = body.categoryId as string;
     const locationIdRaw = body.locationId as string;
     const photoFile = body.photo as File | undefined;
+    const priority = body.priority as string | undefined;
     const notes = body.notes as string | undefined;
 
     // 1. Validasi field wajib
@@ -33,6 +36,7 @@ export async function createReportController(c: Context) {
       description,
       categoryId: categoryIdRaw,
       locationId: locationIdRaw,
+      priority,
       notes,
     });
 
@@ -82,6 +86,7 @@ export async function createReportController(c: Context) {
       categoryId: parsedData.data.categoryId,
       locationId: parsedData.data.locationId,
       status: 'pending', // default status
+      priority: parsedData.data.priority,
       notes: parsedData.data.notes || null,
     });
 
@@ -216,6 +221,61 @@ export async function updateReportStatusController(c: Context) {
     return c.json({
       success: false,
       message: 'Gagal memperbarui status laporan',
+      error: error.message,
+    }, 500);
+  }
+}
+
+/**
+ * Controller untuk memperbarui prioritas laporan (Hanya Admin).
+ */
+export async function updateReportPriorityController(c: Context) {
+  try {
+    const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
+
+    // Ambil JWT payload untuk role check
+    const jwtPayload = c.get('jwtPayload') as { id: string; role: string } | undefined;
+    if (!jwtPayload || jwtPayload.role !== 'admin') {
+      return c.json({
+        success: false,
+        message: 'Akses ditolak: Hanya admin yang diperbolehkan mengubah prioritas',
+      }, 403);
+    }
+
+    const body = await c.req.json();
+    const parsed = updateReportPrioritySchema.safeParse(body);
+
+    if (!parsed.success) {
+      return c.json({
+        success: false,
+        message: 'Validasi prioritas gagal',
+        error: parsed.error.format(),
+      }, 400);
+    }
+
+    const updated = await updateReportPriority(id, parsed.data.priority);
+    if (!updated) {
+      return c.json({
+        success: false,
+        message: 'Laporan tidak ditemukan',
+      }, 404);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Prioritas laporan berhasil diperbarui',
+      data: updated,
+    }, 200);
+  } catch (error: any) {
+    return c.json({
+      success: false,
+      message: 'Gagal memperbarui prioritas laporan',
       error: error.message,
     }, 500);
   }

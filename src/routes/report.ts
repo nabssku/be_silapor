@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
-import { authMiddleware } from '../middleware/auth.js'
+import { authMiddleware, adminMiddleware } from '../middleware/auth.js'
 import {
   createReportController,
   getReportsController,
   getReportByIdController,
   updateReportStatusController,
+  updateReportPriorityController,
   createFeedbackController
 } from '../controllers/report.js'
 
@@ -24,6 +25,9 @@ reportRouter.get('/reports/:id', getReportByIdController)
 
 // Route: Memperbarui Status Laporan (Khusus Admin / Teknisi)
 reportRouter.put('/reports/:id/status', updateReportStatusController)
+
+// Route: Memperbarui Prioritas Laporan (Khusus Admin)
+reportRouter.put('/reports/:id/priority', adminMiddleware, updateReportPriorityController)
 
 // Route: Mengirimkan Feedback (Khusus Reporter Asli)
 reportRouter.post('/reports/:id/feedbacks', createFeedbackController)

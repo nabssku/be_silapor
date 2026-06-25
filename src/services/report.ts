@@ -21,6 +21,7 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
       description: reports.description,
       photoUrl: reports.photoUrl,
       status: reports.status,
+      priority: reports.priority,
       notes: reports.notes,
       createdAt: reports.createdAt,
       updatedAt: reports.updatedAt,
@@ -75,6 +76,7 @@ export async function getReportById(id: string) {
       description: reports.description,
       photoUrl: reports.photoUrl,
       status: reports.status,
+      priority: reports.priority,
       notes: reports.notes,
       createdAt: reports.createdAt,
       updatedAt: reports.updatedAt,
@@ -137,6 +139,18 @@ export async function updateReportStatus(id: string, status: any, notes?: string
   const result = await db
     .update(reports)
     .set({ status, notes, updatedAt: new Date() })
+    .where(eq(reports.id, id))
+    .returning();
+  return result[0] || null;
+}
+
+/**
+ * Mengubah prioritas laporan (Khusus Admin).
+ */
+export async function updateReportPriority(id: string, priority: 'low' | 'medium' | 'high') {
+  const result = await db
+    .update(reports)
+    .set({ priority, updatedAt: new Date() })
     .where(eq(reports.id, id))
     .returning();
   return result[0] || null;

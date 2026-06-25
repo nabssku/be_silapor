@@ -11,6 +11,9 @@ export const createReportSchema = z.object({
     z.number().int(),
     z.string().regex(/^\d+$/, { message: 'Location ID harus berupa angka' }).transform(Number)
   ]),
+  priority: z.enum(['low', 'medium', 'high'], {
+    message: 'Prioritas harus berupa low, medium, atau high',
+  }).optional().default('medium'),
   notes: z.string().optional(),
 });
 
@@ -19,6 +22,12 @@ export const updateReportStatusSchema = z.object({
     message: 'Status harus berupa pending, in_progress, resolved, atau rejected',
   }),
   notes: z.string().optional(),
+});
+
+export const updateReportPrioritySchema = z.object({
+  priority: z.enum(['low', 'medium', 'high'], {
+    message: 'Prioritas harus berupa low, medium, atau high',
+  }),
 });
 
 export const createFeedbackSchema = z.object({
