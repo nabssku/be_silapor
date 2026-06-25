@@ -7,14 +7,58 @@ import { eq, count, avg, desc, or } from 'drizzle-orm'
  * Menampilkan statistik sistem, statistik pengguna, ringkasan feedback, dan laporan terbaru.
  */
 export async function getAdminSummary() {
-  // 1. Hitung jumlah laporan berdasarkan status
-  const reportStats = await db
-    .select({
-      status: reports.status,
-      count: count(),
-    })
-    .from(reports)
-    .groupBy(reports.status);
+  // Jalankan semua query database secara paralel untuk mengurangi latensi
+  const [
+    reportStats,
+    userStats,
+    categoryCountResult,
+    locationCountResult,
+    avgFeedbackResult,
+    recentReports
+  ] = await Promise.all([
+    // 1. Hitung jumlah laporan berdasarkan status
+    db
+      .select({
+        status: reports.status,
+        count: count(),
+      })
+      .from(reports)
+      .groupBy(reports.status),
+
+    // 2. Hitung jumlah pengguna berdasarkan role
+    db
+      .select({
+        role: users.role,
+        count: count(),
+      })
+      .from(users)
+      .groupBy(users.role),
+
+    // 3. Hitung fasilitas
+    db.select({ count: count() }).from(categories),
+    db.select({ count: count() }).from(locations),
+
+    // 4. Hitung rata-rata feedback rating
+    db
+      .select({
+        avgRating: avg(reportFeedbacks.rating),
+      })
+      .from(reportFeedbacks),
+
+    // 5. Ambil 5 laporan terbaru sistem
+    db
+      .select({
+        id: reports.id,
+        title: reports.title,
+        status: reports.status,
+        createdAt: reports.createdAt,
+        reporterName: users.name,
+      })
+      .from(reports)
+      .innerJoin(users, eq(reports.userId, users.id))
+      .orderBy(desc(reports.createdAt))
+      .limit(5)
+  ]);
 
   const reportsCount = {
     total: 0,
@@ -33,15 +77,6 @@ export async function getAdminSummary() {
     }
   }
 
-  // 2. Hitung jumlah pengguna berdasarkan role
-  const userStats = await db
-    .select({
-      role: users.role,
-      count: count(),
-    })
-    .from(users)
-    .groupBy(users.role);
-
   const usersCount = {
     total: 0,
     mahasiswa: 0,
@@ -59,37 +94,12 @@ export async function getAdminSummary() {
     }
   }
 
-  // 3. Hitung fasilitas
-  const categoryCountResult = await db.select({ count: count() }).from(categories);
-  const locationCountResult = await db.select({ count: count() }).from(locations);
-
   const totalCategories = Number(categoryCountResult[0]?.count || 0);
   const totalLocations = Number(locationCountResult[0]?.count || 0);
-
-  // 4. Hitung rata-rata feedback rating
-  const avgFeedbackResult = await db
-    .select({
-      avgRating: avg(reportFeedbacks.rating),
-    })
-    .from(reportFeedbacks);
 
   const averageRating = avgFeedbackResult[0]?.avgRating
     ? parseFloat(parseFloat(avgFeedbackResult[0].avgRating).toFixed(2))
     : 0;
-
-  // 5. Ambil 5 laporan terbaru sistem
-  const recentReports = await db
-    .select({
-      id: reports.id,
-      title: reports.title,
-      status: reports.status,
-      createdAt: reports.createdAt,
-      reporterName: users.name,
-    })
-    .from(reports)
-    .innerJoin(users, eq(reports.userId, users.id))
-    .orderBy(desc(reports.createdAt))
-    .limit(5);
 
   return {
     role: 'admin',

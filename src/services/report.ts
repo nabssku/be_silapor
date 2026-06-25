@@ -80,73 +80,72 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
  * Mengambil satu detail laporan berdasarkan ID beserta feedback-nya.
  */
 export async function getReportById(id: string) {
-  const result = await db
-    .select({
-      id: reports.id,
-      title: reports.title,
-      description: reports.description,
-      photoUrl: reports.photoUrl,
-      completionPhotoUrl: reports.completionPhotoUrl,
-      status: reports.status,
-      priority: reports.priority,
-      notes: reports.notes,
-      createdAt: reports.createdAt,
-      updatedAt: reports.updatedAt,
-      reporter: {
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role,
-      },
-      category: {
-        id: categories.id,
-        name: categories.name,
-        description: categories.description,
-      },
-      location: {
-        id: locations.id,
-        name: locations.name,
-        description: locations.description,
-      },
-      technician: {
-        id: technicians.id,
-        name: technicians.name,
-        email: technicians.email,
-        role: technicians.role,
-      },
-    })
-    .from(reports)
-    .innerJoin(users, eq(reports.userId, users.id))
-    .innerJoin(categories, eq(reports.categoryId, categories.id))
-    .innerJoin(locations, eq(reports.locationId, locations.id))
-    .leftJoin(technicians, eq(reports.technicianId, technicians.id))
-    .where(eq(reports.id, id))
-    .limit(1);
+  const [reportResult, feedbacks] = await Promise.all([
+    db
+      .select({
+        id: reports.id,
+        title: reports.title,
+        description: reports.description,
+        photoUrl: reports.photoUrl,
+        completionPhotoUrl: reports.completionPhotoUrl,
+        status: reports.status,
+        priority: reports.priority,
+        notes: reports.notes,
+        createdAt: reports.createdAt,
+        updatedAt: reports.updatedAt,
+        reporter: {
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          role: users.role,
+        },
+        category: {
+          id: categories.id,
+          name: categories.name,
+          description: categories.description,
+        },
+        location: {
+          id: locations.id,
+          name: locations.name,
+          description: locations.description,
+        },
+        technician: {
+          id: technicians.id,
+          name: technicians.name,
+          email: technicians.email,
+          role: technicians.role,
+        },
+      })
+      .from(reports)
+      .innerJoin(users, eq(reports.userId, users.id))
+      .innerJoin(categories, eq(reports.categoryId, categories.id))
+      .innerJoin(locations, eq(reports.locationId, locations.id))
+      .leftJoin(technicians, eq(reports.technicianId, technicians.id))
+      .where(eq(reports.id, id))
+      .limit(1),
 
-  if (result.length === 0) return null;
+    db
+      .select({
+        id: reportFeedbacks.id,
+        comment: reportFeedbacks.comment,
+        rating: reportFeedbacks.rating,
+        createdAt: reportFeedbacks.createdAt,
+        user: {
+          id: users.id,
+          name: users.name,
+          role: users.role,
+        },
+      })
+      .from(reportFeedbacks)
+      .innerJoin(users, eq(reportFeedbacks.userId, users.id))
+      .where(eq(reportFeedbacks.reportId, id))
+      .orderBy(reportFeedbacks.createdAt)
+  ]);
 
-  const report = result[0];
-
-  // Ambil feedback terkait laporan ini
-  const feedbacks = await db
-    .select({
-      id: reportFeedbacks.id,
-      comment: reportFeedbacks.comment,
-      rating: reportFeedbacks.rating,
-      createdAt: reportFeedbacks.createdAt,
-      user: {
-        id: users.id,
-        name: users.name,
-        role: users.role,
-      },
-    })
-    .from(reportFeedbacks)
-    .innerJoin(users, eq(reportFeedbacks.userId, users.id))
-    .where(eq(reportFeedbacks.reportId, id))
-    .orderBy(reportFeedbacks.createdAt);
+  if (reportResult.length === 0) return null;
 
   return {
-    ...report,
+    ...reportResult[0],
     feedbacks,
   };
 }

@@ -1,17 +1,15 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { neon, neonConfig } from '@neondatabase/serverless';
 
-// Diperlukan agar WebSocket berjalan di lingkungan Node.js (seperti saat running local dev server)
-(async () => {
-  if (typeof globalThis.WebSocket === 'undefined') {
-    const ws = await import('ws');
-    neonConfig.webSocketConstructor = ws.default || ws;
-  }
-})();
+// Hubungkan langsung ke host database lewat HTTPS, melewati global routing proxy
+// Ini menghindari timeout/error koneksi Undici (fetch) di beberapa lingkungan lokal.
+neonConfig.fetchEndpoint = (host) => `https://${host}/sql`;
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool });
+const client = neon(process.env.DATABASE_URL);
+export const db = drizzle({ client });
+
+
