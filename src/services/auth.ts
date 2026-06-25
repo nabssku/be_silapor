@@ -36,6 +36,7 @@ export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'c
       email: data.email,
       pic: hashedPassword,
       role: data.role,
+      noTelp: data.noTelp,
     })
     .returning({
       id: users.id,
@@ -43,6 +44,7 @@ export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'c
       nimNidn: users.nimNidn,
       email: users.email,
       role: users.role,
+      noTelp: users.noTelp,
       createdAt: users.createdAt,
     });
 

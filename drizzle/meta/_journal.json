@@ -29,6 +29,13 @@
       "when": 1782365428351,
       "tag": "0003_zippy_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782386713381,
+      "tag": "0004_wakeful_lifeguard",
+      "breakpoints": true
     }
   ]
 }

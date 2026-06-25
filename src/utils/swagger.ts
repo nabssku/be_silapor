@@ -123,6 +123,7 @@ export const swaggerSpec = {
                         nimNidn: { type: 'string', example: '2201010023' },
                         email: { type: 'string', example: 'budi@kampus.ac.id' },
                         role: { type: 'string', example: 'mahasiswa' },
+                        noTelp: { type: 'string', nullable: true, example: null },
                         createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
                       },
                     },
@@ -180,6 +181,7 @@ export const swaggerSpec = {
                             nimNidn: { type: 'string', example: '2201010023' },
                             email: { type: 'string', example: 'budi@kampus.ac.id' },
                             role: { type: 'string', example: 'mahasiswa' },
+                            noTelp: { type: 'string', nullable: true, example: '081234567890' },
                           },
                         },
                       },
@@ -232,6 +234,7 @@ export const swaggerSpec = {
                         nim: { type: 'string', example: '202410370110357' },
                         nama: { type: 'string', example: 'Nabil Sahsada Suratno' },
                         fakultas: { type: 'string', example: 'Fakultas Teknik' },
+                        noTelp: { type: 'string', nullable: true, example: null },
                         token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
                         biodata: {
                           type: 'object',
@@ -801,6 +804,7 @@ export const swaggerSpec = {
                           nimNidn: { type: 'string', example: '2201010023' },
                           email: { type: 'string', example: 'budi@kampus.ac.id' },
                           role: { type: 'string', example: 'mahasiswa' },
+                          noTelp: { type: 'string', nullable: true, example: '081234567890' },
                           createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
                           updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
                         }
@@ -831,7 +835,8 @@ export const swaggerSpec = {
                   nimNidn: { type: 'string', example: '2201010044' },
                   email: { type: 'string', example: 'dedi@kampus.ac.id' },
                   pic: { type: 'string', example: 'password123', description: 'Password akun user' },
-                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'teknisi' }
+                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'teknisi' },
+                  noTelp: { type: 'string', example: '081234567890', description: 'Nomor telepon (opsional, format 08...)' }
                 }
               }
             }
@@ -855,6 +860,7 @@ export const swaggerSpec = {
                         nimNidn: { type: 'string', example: '2201010044' },
                         email: { type: 'string', example: 'dedi@kampus.ac.id' },
                         role: { type: 'string', example: 'teknisi' },
+                        noTelp: { type: 'string', nullable: true, example: '081234567890' },
                         createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
                         updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
                       }
@@ -924,7 +930,8 @@ export const swaggerSpec = {
                   nimNidn: { type: 'string', example: '2201010023' },
                   email: { type: 'string', example: 'budi_new@kampus.ac.id' },
                   pic: { type: 'string', example: 'newpassword123', description: 'Password baru (opsional)' },
-                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'mahasiswa' }
+                  role: { type: 'string', enum: ['mahasiswa', 'dosen', 'admin', 'teknisi'], example: 'mahasiswa' },
+                  noTelp: { type: 'string', example: '081234567890', description: 'Nomor telepon (opsional, format 08...)' }
                 }
               }
             }
@@ -948,6 +955,7 @@ export const swaggerSpec = {
                         nimNidn: { type: 'string', example: '2201010023' },
                         email: { type: 'string', example: 'budi_new@kampus.ac.id' },
                         role: { type: 'string', example: 'mahasiswa' },
+                        noTelp: { type: 'string', nullable: true, example: '081234567890' },
                         createdAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
                         updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' }
                       }

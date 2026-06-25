@@ -11,6 +11,7 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 255 }).notNull(),
   nimNidn: varchar('nim_nidn', { length: 50 }).unique().notNull(),
   email: varchar('email', { length: 255 }).unique().notNull(),
+  noTelp: varchar('no_telp', { length: 20 }),
   pic: text('pic').notNull(),
   role: roleEnum('role').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

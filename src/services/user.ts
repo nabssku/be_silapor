@@ -14,6 +14,7 @@ export async function getUsers() {
       nimNidn: users.nimNidn,
       email: users.email,
       role: users.role,
+      noTelp: users.noTelp,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     })
@@ -32,6 +33,7 @@ export async function getUserById(id: string) {
       nimNidn: users.nimNidn,
       email: users.email,
       role: users.role,
+      noTelp: users.noTelp,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     })
@@ -79,6 +81,7 @@ export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'c
       email: data.email,
       pic: hashedPassword,
       role: data.role,
+      noTelp: data.noTelp,
     })
     .returning({
       id: users.id,
@@ -86,6 +89,7 @@ export async function createUser(data: Omit<typeof users.$inferInsert, 'id' | 'c
       nimNidn: users.nimNidn,
       email: users.email,
       role: users.role,
+      noTelp: users.noTelp,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });
@@ -117,6 +121,7 @@ export async function updateUser(id: string, data: Partial<Omit<typeof users.$in
       nimNidn: users.nimNidn,
       email: users.email,
       role: users.role,
+      noTelp: users.noTelp,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });

@@ -8,6 +8,12 @@ export const createUserSchema = z.object({
   role: z.enum(['mahasiswa', 'dosen', 'admin', 'teknisi'], {
     message: 'Role harus berupa mahasiswa, dosen, admin, atau teknisi',
   }),
+  noTelp: z.string()
+    .regex(/^08[0-9]+$/, { message: 'Nomor telepon harus diawali dengan 08 dan hanya berisi angka' })
+    .min(10, { message: 'Nomor telepon minimal 10 karakter' })
+    .max(15, { message: 'Nomor telepon maksimal 15 karakter' })
+    .optional()
+    .nullable(),
 });
 
 export const updateUserSchema = z.object({
@@ -18,4 +24,10 @@ export const updateUserSchema = z.object({
   role: z.enum(['mahasiswa', 'dosen', 'admin', 'teknisi'], {
     message: 'Role harus berupa mahasiswa, dosen, admin, atau teknisi',
   }).optional(),
+  noTelp: z.string()
+    .regex(/^08[0-9]+$/, { message: 'Nomor telepon harus diawali dengan 08 dan hanya berisi angka' })
+    .min(10, { message: 'Nomor telepon minimal 10 karakter' })
+    .max(15, { message: 'Nomor telepon maksimal 15 karakter' })
+    .optional()
+    .nullable(),
 });

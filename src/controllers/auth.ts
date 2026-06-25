@@ -100,6 +100,7 @@ export async function loginController(c: Context) {
           nimNidn: user.nimNidn,
           email: user.email,
           role: user.role,
+          noTelp: (user as any).noTelp || null,
         },
       },
     }, 200);
@@ -232,6 +233,7 @@ export async function loginInfokhsController(c: Context) {
         email: userEmail,
         pic: inputPic,
         role: 'mahasiswa',
+        noTelp: null,
       });
       userId = newUser.id;
       userRole = newUser.role;
@@ -264,6 +266,7 @@ export async function loginInfokhsController(c: Context) {
       data: {
         nim: userNim,
         nama: userName,
+        noTelp: null,
         fakultas: fakultas || 'Fakultas Teknik',
         token,
         biodata,
