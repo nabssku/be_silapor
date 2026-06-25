@@ -16,7 +16,7 @@ export const loginSchema = z.object({
 });
 
 export const loginInfokhsSchema = z.object({
-  nim: z.string().min(3, { message: 'NIM minimal harus 3 karakter' }),
+  identifier: z.string().min(3, { message: 'NIM minimal harus 3 karakter' }),
   pic: z.string().min(6, { message: 'Password minimal harus 6 karakter' }),
 });
 

@@ -199,7 +199,7 @@ export const swaggerSpec = {
       post: {
         tags: ['Authentication'],
         summary: 'Login User via InfoKHS (API UMM) [Public]',
-        description: 'Autentikasi mahasiswa menggunakan NIM (nim) dan password (pic) yang diteruskan ke API UMM (InfoKHS). Jika berhasil, user akan otomatis didaftarkan (bila belum terdaftar) dan mendapatkan local JWT token.',
+        description: 'Autentikasi mahasiswa menggunakan NIM (identifier) dan password (pic) yang diteruskan ke API UMM (InfoKHS). Jika berhasil, user akan otomatis didaftarkan (bila belum terdaftar) dan mendapatkan local JWT token.',
         security: [],
         requestBody: {
           required: true,
@@ -207,9 +207,9 @@ export const swaggerSpec = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['nim', 'pic'],
+                required: ['identifier', 'pic'],
                 properties: {
-                  nim: { type: 'string', example: '202410370110357', description: 'NIM Mahasiswa' },
+                  identifier: { type: 'string', example: '202410370110357', description: 'NIM Mahasiswa' },
                   pic: { type: 'string', example: '15841268', description: 'Password/PIC Mahasiswa' },
                 },
               },

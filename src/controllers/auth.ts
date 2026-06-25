@@ -118,7 +118,7 @@ export async function loginController(c: Context) {
 export async function loginInfokhsController(c: Context) {
   try {
     const body = (c.req.valid as any)('json');
-    const { nim: inputNim, pic: inputPic } = body;
+    const { identifier: inputNim, pic: inputPic } = body;
 
     // 0. Dapatkan token dinamis untuk x-signature dari API UMM
     const tokenResponse = await fetch('https://apiv2.umm.ac.id/v2/user/gettoken', {
