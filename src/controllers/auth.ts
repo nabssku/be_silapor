@@ -163,6 +163,24 @@ export async function loginInfokhsController(c: Context) {
 
     const { nim, nama, fakultas } = result.data;
 
+    // 2.5. Ambil biodata lengkap dari API UMM
+    let biodata: any = null;
+    try {
+      const biodataRes = await fetch(`https://apiv2.umm.ac.id/v1/mahasiswa/biodata/58fe1d8e3395cd9e6df82d959bcde17f/${nim}`);
+      if (biodataRes.ok) {
+        const biodataJson = (await biodataRes.json()) as any;
+        if (biodataJson.status === 1 && biodataJson.data && biodataJson.data.length > 0) {
+          const records = biodataJson.data[0];
+          const innerRecords = records ? records[''] : null;
+          if (innerRecords && innerRecords.length > 0) {
+            biodata = innerRecords[0];
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Gagal mengambil biodata dari UMM:', e);
+    }
+
     // 3. Cek apakah user sudah terdaftar di sistem lokal
     let userId: string;
     let userRole: 'mahasiswa' | 'dosen' | 'admin' | 'teknisi';
@@ -172,11 +190,11 @@ export async function loginInfokhsController(c: Context) {
     const existingUser = await findUserByNimOrEmail(nim);
     if (!existingUser) {
       // Auto-register user baru jika belum terdaftar
-      const generatedEmail = `${nim}@student.umm.ac.id`;
+      const userEmail = biodata?.email || `${nim}@student.umm.ac.id`;
       const newUser = await createUser({
         name: nama,
         nimNidn: nim,
-        email: generatedEmail,
+        email: userEmail,
         pic: xpassword,
         role: 'mahasiswa',
       });
@@ -213,6 +231,7 @@ export async function loginInfokhsController(c: Context) {
         nama: userName,
         fakultas: fakultas || 'Fakultas Teknik',
         token,
+        biodata,
       },
     }, 200);
 
