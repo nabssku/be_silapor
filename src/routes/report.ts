@@ -7,6 +7,7 @@ import {
   updateReportStatusController,
   updateReportPriorityController,
   assignTechnicianController,
+  uploadCompletionPhotoController,
   createFeedbackController
 } from '../controllers/report.js'
 
@@ -32,6 +33,9 @@ reportRouter.put('/reports/:id/priority', adminMiddleware, updateReportPriorityC
 
 // Route: Menugaskan Teknisi ke Laporan (Khusus Admin)
 reportRouter.put('/reports/:id/assign', adminMiddleware, assignTechnicianController)
+
+// Route: Mengunggah Foto Bukti Hasil Pengerjaan (Khusus Teknisi)
+reportRouter.put('/reports/:id/completion-photo', uploadCompletionPhotoController)
 
 // Route: Mengirimkan Feedback (Khusus Reporter Asli)
 reportRouter.post('/reports/:id/feedbacks', createFeedbackController)

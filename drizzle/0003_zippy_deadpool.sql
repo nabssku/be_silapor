@@ -1,0 +1,1 @@
+ALTER TABLE "reports" ADD COLUMN "completion_photo_url" text;

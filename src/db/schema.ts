@@ -41,6 +41,7 @@ export const reports = pgTable('reports', {
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description').notNull(),
   photoUrl: text('photo_url'),
+  completionPhotoUrl: text('completion_photo_url'),
   status: statusEnum('status').default('pending').notNull(),
   priority: priorityEnum('priority').default('sedang').notNull(),
   technicianId: uuid('technician_id').references(() => users.id, { onDelete: 'set null' }),

@@ -23,6 +23,7 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
       title: reports.title,
       description: reports.description,
       photoUrl: reports.photoUrl,
+      completionPhotoUrl: reports.completionPhotoUrl,
       status: reports.status,
       priority: reports.priority,
       notes: reports.notes,
@@ -85,6 +86,7 @@ export async function getReportById(id: string) {
       title: reports.title,
       description: reports.description,
       photoUrl: reports.photoUrl,
+      completionPhotoUrl: reports.completionPhotoUrl,
       status: reports.status,
       priority: reports.priority,
       notes: reports.notes,
@@ -180,6 +182,18 @@ export async function assignTechnician(id: string, technicianId: string | null) 
   const result = await db
     .update(reports)
     .set({ technicianId, updatedAt: new Date() })
+    .where(eq(reports.id, id))
+    .returning();
+  return result[0] || null;
+}
+
+/**
+ * Memperbarui foto bukti hasil pengerjaan laporan (Khusus Teknisi).
+ */
+export async function updateReportCompletionPhoto(id: string, completionPhotoUrl: string) {
+  const result = await db
+    .update(reports)
+    .set({ completionPhotoUrl, updatedAt: new Date() })
     .where(eq(reports.id, id))
     .returning();
   return result[0] || null;

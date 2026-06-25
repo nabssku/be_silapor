@@ -576,6 +576,56 @@ export const swaggerSpec = {
         },
       },
     },
+    '/api/reports/{id}/completion-photo': {
+      put: {
+        tags: ['Reports'],
+        summary: 'Upload Completion Photo [Khusus Teknisi]',
+        description: 'Mengunggah foto bukti pengerjaan laporan kerusakan yang selesai (Hanya dapat diakses oleh role teknisi)',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                required: ['photo'],
+                properties: {
+                  photo: { type: 'string', format: 'binary', description: 'File gambar bukti pengerjaan (jpg, png, dll.)' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Foto bukti pengerjaan berhasil diunggah',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Foto bukti pengerjaan berhasil diunggah' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'b1d034ee-0c0b-4ef8-bb6d-6bb9bd380a11' },
+                        title: { type: 'string', example: 'Kipas Angin Kelas Rusak' },
+                        completionPhotoUrl: { type: 'string', example: 'https://res.cloudinary.com/demo/image/upload/v1570975200/sample.jpg' },
+                        updatedAt: { type: 'string', example: '2026-06-23T12:00:00.000Z' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Foto bukti wajib diunggah' },
+          403: { description: 'Akses ditolak: Hanya teknisi yang diperbolehkan' },
+          404: { description: 'Laporan tidak ditemukan' },
+        },
+      },
+    },
     '/api/reports/{id}/feedbacks': {
       post: {
         tags: ['Reports'],

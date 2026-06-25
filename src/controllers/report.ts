@@ -14,6 +14,7 @@ import {
   updateReportStatus,
   updateReportPriority,
   assignTechnician,
+  updateReportCompletionPhoto,
   createReportFeedback
 } from '../services/report.js'
 import { getUserById } from '../services/user.js'
@@ -352,6 +353,83 @@ export async function assignTechnicianController(c: Context) {
     return c.json({
       success: false,
       message: 'Gagal menugaskan teknisi ke laporan',
+      error: error.message,
+    }, 500);
+  }
+}
+
+/**
+ * Controller untuk mengunggah foto bukti pengerjaan laporan (Khusus Teknisi).
+ */
+export async function uploadCompletionPhotoController(c: Context) {
+  try {
+    const id = c.req.param('id');
+    if (!id) {
+      return c.json({
+        success: false,
+        message: 'Format ID tidak valid',
+      }, 400);
+    }
+
+    // Ambil JWT payload untuk role check
+    const jwtPayload = c.get('jwtPayload') as { id: string; role: string } | undefined;
+    if (!jwtPayload || jwtPayload.role !== 'teknisi') {
+      return c.json({
+        success: false,
+        message: 'Akses ditolak: Hanya teknisi yang diperbolehkan mengunggah foto bukti pengerjaan',
+      }, 403);
+    }
+
+    // Parse body multipart/form-data
+    const body = await c.req.parseBody();
+    const photoFile = body.photo as File | undefined;
+
+    if (!photoFile || !(photoFile instanceof File) || photoFile.size === 0) {
+      return c.json({
+        success: false,
+        message: 'Foto bukti pengerjaan wajib diunggah',
+      }, 400);
+    }
+
+    // Cek apakah laporan tersebut ada
+    const report = await getReportById(id);
+    if (!report) {
+      return c.json({
+        success: false,
+        message: 'Laporan tidak ditemukan',
+      }, 404);
+    }
+
+    // Upload foto ke Cloudinary
+    let completionPhotoUrl = '';
+    try {
+      completionPhotoUrl = await uploadToCloudinary(photoFile);
+    } catch (uploadError: any) {
+      return c.json({
+        success: false,
+        message: 'Gagal mengunggah foto ke Cloudinary',
+        error: uploadError.message,
+      }, 500);
+    }
+
+    // Simpan ke database
+    const updated = await updateReportCompletionPhoto(id, completionPhotoUrl);
+    if (!updated) {
+      return c.json({
+        success: false,
+        message: 'Laporan tidak ditemukan saat memperbarui foto',
+      }, 404);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Foto bukti pengerjaan berhasil diunggah',
+      data: updated,
+    }, 200);
+  } catch (error: any) {
+    return c.json({
+      success: false,
+      message: 'Gagal mengunggah foto bukti pengerjaan',
       error: error.message,
     }, 500);
   }
