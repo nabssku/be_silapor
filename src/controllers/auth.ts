@@ -164,17 +164,31 @@ export async function loginInfokhsController(c: Context) {
     const { nim, nama, fakultas } = result.data;
 
     // 3. Cek apakah user sudah terdaftar di sistem lokal
-    let user = await findUserByNimOrEmail(nim);
-    if (!user) {
+    let userId: string;
+    let userRole: 'mahasiswa' | 'dosen' | 'admin' | 'teknisi';
+    let userNim: string;
+    let userName: string;
+
+    const existingUser = await findUserByNimOrEmail(nim);
+    if (!existingUser) {
       // Auto-register user baru jika belum terdaftar
       const generatedEmail = `${nim}@student.umm.ac.id`;
-      user = await createUser({
+      const newUser = await createUser({
         name: nama,
         nimNidn: nim,
         email: generatedEmail,
         pic: xpassword,
         role: 'mahasiswa',
       });
+      userId = newUser.id;
+      userRole = newUser.role;
+      userNim = newUser.nimNidn;
+      userName = newUser.name;
+    } else {
+      userId = existingUser.id;
+      userRole = existingUser.role;
+      userNim = existingUser.nimNidn;
+      userName = existingUser.name;
     }
 
     // 4. Generate JWT Token (masa aktif 24 jam)
@@ -184,8 +198,8 @@ export async function loginInfokhsController(c: Context) {
     }
 
     const payload = {
-      id: user.id,
-      role: user.role,
+      id: userId,
+      role: userRole,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 Jam
     };
 
@@ -195,8 +209,8 @@ export async function loginInfokhsController(c: Context) {
       success: true,
       message: 'Login berhasil',
       data: {
-        nim: user.nimNidn,
-        nama: user.name,
+        nim: userNim,
+        nama: userName,
         fakultas: fakultas || 'Fakultas Teknik',
         token,
       },
