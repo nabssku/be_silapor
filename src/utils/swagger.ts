@@ -518,8 +518,8 @@ export const swaggerSpec = {
       },
       get: {
         tags: ['Reports'],
-        summary: 'Get All Reports [Semua Role (Wajib Login)]',
-        description: 'Mengambil daftar seluruh laporan kerusakan dengan filter opsional (Bisa diakses oleh semua role: mahasiswa, dosen, admin, teknisi)',
+        summary: 'Get Reports [Disesuaikan dengan Role]',
+        description: 'Mengambil daftar laporan kerusakan dengan filter opsional. Hasil yang dikembalikan disesuaikan berdasarkan role pengguna: Mahasiswa/Dosen hanya dapat melihat laporan yang mereka buat sendiri, Teknisi hanya dapat melihat laporan yang ditugaskan kepada mereka (technicianId cocok), sedangkan Admin dapat melihat seluruh laporan.',
         parameters: [
           { name: 'status', in: 'query', required: false, schema: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'] } },
           { name: 'categoryId', in: 'query', required: false, schema: { type: 'integer' } },

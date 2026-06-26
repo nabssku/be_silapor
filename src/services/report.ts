@@ -14,9 +14,15 @@ export async function createReport(data: Omit<typeof reports.$inferInsert, 'id' 
 const technicians = alias(users, 'technicians');
 
 /**
- * Mengambil daftar laporan dengan filter (status, categoryId, locationId) beserta relasi datanya.
+ * Mengambil daftar laporan dengan filter (status, categoryId, locationId, userId, userRole) beserta relasi datanya.
  */
-export async function getReports(filters: { status?: any; categoryId?: number; locationId?: number }) {
+export async function getReports(filters: {
+  status?: any;
+  categoryId?: number;
+  locationId?: number;
+  userId?: string;
+  userRole?: string;
+}) {
   let query = db
     .select({
       id: reports.id,
@@ -67,6 +73,17 @@ export async function getReports(filters: { status?: any; categoryId?: number; l
   }
   if (filters.locationId) {
     conditions.push(eq(reports.locationId, filters.locationId));
+  }
+
+  // Filter berdasarkan role user
+  if (filters.userRole === 'mahasiswa' || filters.userRole === 'dosen') {
+    if (filters.userId) {
+      conditions.push(eq(reports.userId, filters.userId));
+    }
+  } else if (filters.userRole === 'teknisi') {
+    if (filters.userId) {
+      conditions.push(eq(reports.technicianId, filters.userId));
+    }
   }
 
   if (conditions.length > 0) {

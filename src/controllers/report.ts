@@ -109,10 +109,19 @@ export async function createReportController(c: Context) {
 }
 
 /**
- * Controller untuk mengambil semua daftar laporan dengan filter.
+ * Controller untuk mengambil daftar laporan dengan filter (disesuaikan dengan role).
  */
 export async function getReportsController(c: Context) {
   try {
+    // Ambil JWT payload untuk mengambil userId dan role
+    const jwtPayload = c.get('jwtPayload') as { id: string; role: string } | undefined;
+    if (!jwtPayload) {
+      return c.json({
+        success: false,
+        message: 'Pengguna tidak terautentikasi',
+      }, 401);
+    }
+
     const status = c.req.query('status');
     const categoryIdRaw = c.req.query('categoryId');
     const locationIdRaw = c.req.query('locationId');
@@ -124,6 +133,8 @@ export async function getReportsController(c: Context) {
       status,
       categoryId: isNaN(categoryId as any) ? undefined : categoryId,
       locationId: isNaN(locationId as any) ? undefined : locationId,
+      userId: jwtPayload.id,
+      userRole: jwtPayload.role,
     });
 
     return c.json({
