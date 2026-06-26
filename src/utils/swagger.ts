@@ -7,8 +7,8 @@ export const swaggerSpec = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Local Development Server',
+      url: 'https://be-silapor.vercel.app',
+      description: 'Production Server',
     },
   ],
   security: [
